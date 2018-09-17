@@ -113,11 +113,11 @@ if __name__ == '__main__' :
 #        userInput = True
 #    else:
 #        userInput = False
-    print("如果不換")
+    print("如果不換===")
     game1 = MontyHallProblem()
     game1.mainGame_noChange()
     
-    print("如果換")
+    print("如果換====")
     game2 = MontyHallProblem()
     game2.mainGame_change()
     
