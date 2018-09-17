@@ -67,24 +67,24 @@ class MontyHallProblem():
     
     def Analysis_noChange(self):
         print('統計')
-        self.getCarNum_noChange = 0
+        getCarNum_noChange = 0
         for i in range(self.frequency):
         #    print(ansArr[i])
             ansTemp = self.ansArr[i][0:3]
             partiTemp = int(self.ansArr[i][self.door_amount])
             if ansTemp[partiTemp] ==1:
-               self.getCarNum_noChange += 1
-        print('If no change:',  round(self.getCarNum_noChange * 100 / float(self.frequency), 2), "%")
+               getCarNum_noChange += 1
+        print('If no change:',  round(getCarNum_noChange * 100 / float(self.frequency), 2), "%")
     def Analysis_change(self):
         print('統計')
-        self.getCarNum_Change = 0
+        getCarNum_Change = 0
         for i in range(self.frequency):
         #    print(ansArr[i])
             ansTemp = self.ansArr[i][0:3]
             partiNewTemp = int(self.ansArr[i][self.door_amount+1])
             if ansTemp[partiNewTemp] ==1:
-               self.getCarNum_Change += 1
-        print('If change:',     round(self.getCarNum_Change   * 100 / float(self.frequency), 2), "%")
+               getCarNum_Change += 1
+        print('If change:',     round(getCarNum_Change   * 100 / float(self.frequency), 2), "%")
     def mainGame_noChange(self):
         if self.reBuild or (self.door_car_npz not in os.listdir('./')):
             self.makeTheTable()
