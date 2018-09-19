@@ -32,6 +32,7 @@ class MontyHallProblem():
         self.reBuild = reBuild
         return
     def makeTheTable(self):
+        #建門的表
         print('建表')
         #初始化，0~door_amount:門在哪(0沒1有車)，n-2(door_amount):使用者回答，n-1(door_amount+1):使用者換答案
         self.ansArr = np.zeros((self.frequency, self.door_amount+2))
@@ -42,10 +43,12 @@ class MontyHallProblem():
             self.ansArr[i][self.door_car] = 1
         return
     def ParticipantAns(self, i):
+        #參賽者一開始的猜測
         self.partiAns = random.randint(0, self.door_amount-1)
         self.ansArr[i][self.door_amount] =  self.partiAns
         return
     def HostPickUp(self, i):
+        #主持人行為
         tempArr = self.ansArr[i][:self.door_amount].copy()
         tempList = list()
         for j, num in enumerate(tempArr):
@@ -54,10 +57,10 @@ class MontyHallProblem():
             if j == self.partiAns:
                 continue
             tempList.append(j)
-#        print(tempArr, num, self.partiAns, tempList)
         self.hostAsk = random.choice(tempList)
         return
     def ParticipantAns_Change(self, i):
+        #主持人行為引發的參賽者改變答案
         tempArr = self.ansArr[i][:self.door_amount].copy()
         tempList = list()
         for j, num in enumerate(tempArr):
@@ -69,63 +72,48 @@ class MontyHallProblem():
         self.partiNewAns = random.choice(tempList)
         self.ansArr[i][self.door_amount+1] =  self.partiNewAns
         return
-    def Analysis_noChange(self):
+
+    def Analysis(self, changeTF = True):
         print('統計')
-        getCarNum_noChange = 0
-        for i in range(self.frequency):
-        #    print(ansArr[i])
-            ansTemp = self.ansArr[i][0:3]
-            partiTemp = int(self.ansArr[i][self.door_amount])
-            if ansTemp[partiTemp] ==1:
-               getCarNum_noChange += 1
-        print('If no change:',  round(getCarNum_noChange * 100 / float(self.frequency), 2), "%")
-        return
-    def Analysis_change(self):
-        print('統計')
+        if changeTF:
+            indexAns = self.door_amount+1
+        else:
+            indexAns = self.door_amount
         getCarNum_Change = 0
         for i in range(self.frequency):
-        #    print(ansArr[i])
             ansTemp = self.ansArr[i][0:3]
-            partiNewTemp = int(self.ansArr[i][self.door_amount+1])
+            partiNewTemp = int(self.ansArr[i][indexAns])
             if ansTemp[partiNewTemp] ==1:
                getCarNum_Change += 1
-        print('If change:',     round(getCarNum_Change   * 100 / float(self.frequency), 2), "%")
+        print('If'+(' ' if changeTF else ' no ')+'change:', 
+              round(getCarNum_Change   * 100 / float(self.frequency), 2), "%")
         return
-    def mainGame_noChange(self):
+    def mainGame(self, changeTF = True):
+        #主遊戲流程
         if self.reBuild or (self.door_car_npz not in os.listdir('./')):
             self.makeTheTable()
             for i in range(self.frequency):
                 self.ParticipantAns(i)
+                if changeTF:
+                    self.HostPickUp(i)
+                    self.ParticipantAns_Change(i)
+                    
             np.save(self.door_car_npz, self.ansArr)
         else:
             self.ansArr = np.load(self.door_car_npz)
-        self.Analysis_noChange()
+        self.Analysis(changeTF=changeTF)
         return
-    def mainGame_change(self):
-        if self.reBuild or (self.door_car_npz not in os.listdir('./')):
-            self.makeTheTable()
-            for i in range(self.frequency):
-                self.ParticipantAns(i)
-                self.HostPickUp(i)
-                self.ParticipantAns_Change(i)
-            np.save(self.door_car_npz, self.ansArr)
-        else:
-            self.ansArr = np.load(self.door_car_npz)
-        self.Analysis_change()
-        return
-
 if __name__ == '__main__' :
-    #是否重新算
-#    userInput = input("重新算 T/F:")
-#    if userInput in ['T', 't', 'True']:
-#        userInput = True
-#    else:
-#        userInput = False
+    import time
+    startTime = time.time()
+    print("START")
     print("如果不換===")
     game1 = MontyHallProblem()
-    game1.mainGame_noChange()
+    game1.mainGame(changeTF = False)
     
     print("如果換====")
     game2 = MontyHallProblem()
-    game2.mainGame_change()
+    game2.mainGame(changeTF = True)
     
+    endTime = time.time()
+    print('END', 'It takes', endTime-startTime ,'sec.')
